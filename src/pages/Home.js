@@ -1,33 +1,44 @@
 import { useEffect, useState } from "react";
+import { AiFillDelete, AiFillEdit, AiFillEye } from "react-icons/ai";
+import { SkeletonLoader } from "../components/utils/Loader";
+import { toast } from "react-toastify";
 import axios from "axios";
 import Navbar from "../components/Navbar";
-import { AiFillDelete, AiFillEdit, AiFillEye } from "react-icons/ai";
-import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { SkeletonLoader } from "../components/utils/Loader";
 
 const Home = () => {
+  const [userId, setUserId] = useState(
+    JSON.parse(localStorage.getItem("userId")) ?? 8
+  );
   const [datas, setDatas] = useState(null);
-  const [detail, setDetail] = useState([]);
-  const [detailId, setDetailId] = useState("");
+  const [detail, setDetail] = useState({});
+  const [detailId, setDetailId] = useState(null);
   const [fetchStatus, setFetchStatus] = useState(false);
 
   const notify = () => toast.success(`Delete successully 😲`);
 
   const fetchData = async () => {
-    const result = await axios.get("http://localhost:9000/api/v1/cms/notes");
-    setDatas(result.data.data);
+    const result = await axios.get(
+      `http://localhost:9000/api/v1/cms/notes/${userId}`
+    );
+    setDatas(result.data.notes);
   };
 
-  const fetchOneData = async () => {
-    const result = await axios.get(`http://localhost:9000/api/v1/cms/notes/${detailId ? detailId : ""}`)
-    setDetail(result.data.data);
+  const fetchOneData = () => {
+    if (detailId) {
+      axios
+        .get(
+          `http://localhost:9000/api/v1/cms/notesId/${detailId ? detailId : ""}`
+        )
+        .then((result) => {
+          setDetail(result.data.notes);
+        });
+    }
   };
 
   const handleDetail = (e) => {
     let id = parseInt(e.target.value);
 
-    console.log("id: ", id);
     setDetailId(id);
   };
 
@@ -49,17 +60,17 @@ const Home = () => {
 
   useEffect(() => {
     fetchOneData();
-  }, [detailId, setDetailId]);
+  }, [detailId]);
 
   useEffect(() => {
     fetchData();
-  }, [fetchStatus, setFetchStatus]);
+  }, [fetchStatus]);
 
   return (
     <div>
       <Navbar />
-      <div className="w-full flex">
-        <div className="pt-24 pb-10 w-[400px] px-5 flex flex-col max-h-screen overflow-y-auto">
+      <div className="w-full h-screen flex">
+        <div className="mt-[77px] py-2 w-[400px] px-5 flex flex-col max-h-screen overflow-y-auto">
           {datas === null ? (
             <div className="flex flex-col gap-y-2 w-full">
               <SkeletonLoader />
@@ -73,42 +84,40 @@ const Home = () => {
           ) : (
             datas.map((data, i) => {
               return (
-                <>
-                  <div
-                    key={i}
-                    className="bg-slate-100 w-full my-1 rounded-lg py-3 px-5"
-                  >
-                    <h1 className="font-semibold text-base">{data.title}</h1>
-                    <p className="font-normal text-sm">
-                      {truncateString(data.notes, 50)}
-                    </p>
-                    <div className="flex items-center  mt-3 flex-row-reverse">
-                      <button
-                        value={data.id}
-                        onClick={handleDelete}
-                        className='hover:bg-slate-200 transition-all duration-200 flex items-center gap-x-1 py-1 px-2 rounded-md text-sm text-red-500'
-                      >
-                        Delete
-                        <AiFillDelete className="text-red-500" />
-                      </button>
-                      <button
-                        value={data.id}
-                        onClick={handleDetail}
-                        className="hover:bg-slate-200 transition-all duration-200  flex items-center gap-x-1 py-1 px-2 rounded-lg text-sm text-teal-500"
-                      >
-                        Detail
-                        <AiFillEye className="text-teal-500" />
-                      </button>
-                    </div>
+                <div
+                  key={i}
+                  className="bg-slate-100 w-full my-1 rounded-lg py-3 px-5"
+                >
+                  <h1 className="font-semibold text-base">{truncateString(data.title, 10)}</h1>
+                  <p className="font-normal text-sm">
+                    {truncateString(data.notes, 20)}
+                  </p>
+                  <div className="flex items-center  mt-3 flex-row-reverse">
+                    <button
+                      value={data.id}
+                      onClick={handleDelete}
+                      className="hover:bg-slate-200 transition-all duration-200 flex items-center gap-x-1 py-1 px-2 rounded-md text-sm text-red-500"
+                    >
+                      Delete
+                      <AiFillDelete className="text-red-500" />
+                    </button>
+                    <button
+                      value={data.id}
+                      onClick={handleDetail}
+                      className="hover:bg-slate-200 transition-all duration-200  flex items-center gap-x-1 py-1 px-2 rounded-lg text-sm text-teal-500"
+                    >
+                      Detail
+                      <AiFillEye className="text-teal-500" />
+                    </button>
                   </div>
-                </>
+                </div>
               );
             })
           )}
         </div>
 
-        <div className="pt-20 pb-10 w-full h-screen bg-slate-100 px-5 overflow-y-scroll">
-          <h1 className="py-5 font-semibold text-2xl">{detail.title}</h1>
+        <div className="mt-[77px] py-2 w-full max-h-screen bg-slate-100 px-5 overflow-y-scroll">
+          <h1 className="pt-1 pb-5 font-semibold text-2xl">{detail.title}</h1>
           <p className="text-base">{detail.notes}</p>
         </div>
       </div>
