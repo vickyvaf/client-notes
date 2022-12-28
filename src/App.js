@@ -1,10 +1,20 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import Cookies from "js-cookie";
+import Profile from "./pages/Profile";
 import Home from "./pages/Home";
 import Add from "./pages/Add";
-import Profile from "./pages/Profile";
-import { ToastContainer } from "react-toastify";
+import Login from "./pages/Login";
 
 const App = () => {
+  const AuthRoute = ({ children }) => {
+    if (Cookies.get("token") !== undefined) {
+      return children;
+    } else if (Cookies.get("token") === undefined) {
+      return <Navigate to={"/login"} />;
+    }
+  };
+
   return (
     <div>
       <BrowserRouter>
@@ -21,9 +31,17 @@ const App = () => {
           theme="light"
         />
         <Routes>
-          <Route path="/" element={<Home />} />
+          <Route
+            path="/"
+            element={
+              <AuthRoute>
+                <Home />
+              </AuthRoute>
+            }
+          />
           <Route path="/add" element={<Add />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/login" element={<Login />} />
         </Routes>
       </BrowserRouter>
     </div>

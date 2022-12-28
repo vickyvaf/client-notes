@@ -5,12 +5,14 @@ import { toast } from "react-toastify";
 import axios from "axios";
 import Navbar from "../components/Navbar";
 import "react-toastify/dist/ReactToastify.css";
+import Cookies from "js-cookie";
+import { Navigate, useNavigate } from "react-router-dom";
 
 const Home = () => {
   const [userId, setUserId] = useState(
     JSON.parse(localStorage.getItem("userId")) ?? 8
   );
-  const [datas, setDatas] = useState(null);
+  const [datas, setDatas] = useState([]);
   const [detail, setDetail] = useState({});
   const [detailId, setDetailId] = useState(null);
   const [fetchStatus, setFetchStatus] = useState(false);
@@ -18,10 +20,11 @@ const Home = () => {
   const notify = () => toast.success(`Delete successully 😲`);
 
   const fetchData = async () => {
-    const result = await axios.get(
-      `http://localhost:9000/api/v1/cms/notes/${userId}`
-    );
-    setDatas(result.data.notes);
+    const result = await axios.get(`http://localhost:9000/api/v1/notes`, {
+      headers: { Authorization: "Bearer " + Cookies.get("token") },
+    });
+    // console.log(result.data.data);
+    setDatas(result.data.data);
   };
 
   const fetchOneData = () => {
@@ -58,9 +61,9 @@ const Home = () => {
     return str.slice(0, num) + "...";
   };
 
-  useEffect(() => {
-    fetchOneData();
-  }, [detailId]);
+  // useEffect(() => {
+  //   fetchOneData();
+  // }, [detailId]);
 
   useEffect(() => {
     fetchData();
@@ -71,18 +74,7 @@ const Home = () => {
       <Navbar />
       <div className="w-full h-screen flex">
         <div className="mt-[77px] py-2 w-[400px] px-5 flex flex-col max-h-screen overflow-y-auto">
-          {datas === null ? (
-            <div className="flex flex-col gap-y-2 w-full">
-              <SkeletonLoader />
-              <SkeletonLoader />
-              <SkeletonLoader />
-              <SkeletonLoader />
-              <SkeletonLoader />
-              <SkeletonLoader />
-              <SkeletonLoader />
-            </div>
-          ) : (
-            datas.map((data, i) => {
+          {datas.map((data, i) => {
               return (
                 <div
                   key={i}
@@ -113,7 +105,7 @@ const Home = () => {
                 </div>
               );
             })
-          )}
+          }
         </div>
 
         <div className="mt-[77px] py-2 w-full max-h-screen bg-slate-100 px-5 overflow-y-scroll">

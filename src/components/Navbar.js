@@ -1,6 +1,13 @@
-import { Link } from "react-router-dom"
+import Cookies from "js-cookie"
+import { Link, useNavigate } from "react-router-dom"
 
 const Navbar = () => {
+  const navigate = useNavigate()
+  const logout = () => {
+    Cookies.remove("token")
+    navigate("/login")
+  }
+
   return (
     <div className="navbar bg-base-100 absolute z-10 px-5 font-poppins py-3 shadow-md">
       <div className="hidden sm:flex w-full">
@@ -20,7 +27,7 @@ const Navbar = () => {
             <li><Link to={'/'} className="hover:bg-teal-300 sm:hidden">Home</Link></li>
             <li><Link to={'/add'} className="hover:bg-teal-300">Add Notes</Link></li>
             <li><Link to={'/profile'} className="hover:bg-teal-300">Profile</Link></li>
-            <li><button className=" hover:bg-teal-300">Logout</button></li>
+            <li><button className=" hover:bg-teal-300" onClick={logout}>Logout</button></li>
           </ul>
         </div>
       </div>
