@@ -16,6 +16,14 @@ const App = () => {
     }
   };
 
+  const LoginRoute = ({ children }) => {
+    if (Cookies.get("token") === undefined) {
+      return children;
+    } else if (Cookies.get("token") !== undefined) {
+      return <Navigate to={"/"} />;
+    }
+  };
+
   return (
     <div>
       <BrowserRouter>
@@ -31,6 +39,8 @@ const App = () => {
           pauseOnHover
           theme="light"
         />
+
+        {/* Protected Routes */}
         <Routes>
           <Route
             path="/"
@@ -40,10 +50,41 @@ const App = () => {
               </ProtectedRoute>
             }
           />
-          <Route path="/add" element={<Add />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
+
+          <Route
+            path="/add"
+            element={
+              <ProtectedRoute>
+                <Add />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute>
+                <Profile />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/login"
+            element={
+              <LoginRoute>
+                <Login />
+              </LoginRoute>
+            }
+          />
+
+          <Route
+            path="/register"
+            element={
+              <LoginRoute>
+                <Register />
+              </LoginRoute>
+            }
+          />
         </Routes>
       </BrowserRouter>
     </div>
