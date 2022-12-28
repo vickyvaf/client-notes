@@ -15,7 +15,7 @@ const Home = () => {
   const notify = () => toast.success(`Delete successully 😲`);
 
   const fetchData = async () => {
-    const result = await axios.get(`http://localhost:9000/api/v1/notes`, {
+    const result = await axios.get(process.env.REACT_APP_NOTES, {
       headers: { Authorization: "Bearer " + Cookies.get("token") },
     });
     setDatas(result.data.data);
@@ -24,9 +24,7 @@ const Home = () => {
   const fetchOneData = () => {
     if (detailId) {
       axios
-        .get(
-          `http://localhost:9000/api/v1/cms/notesId/${detailId ? detailId : ""}`
-        )
+        .get(`${process.env.REACT_APP_NOTES}/${detailId ? detailId : ""}`)
         .then((result) => {
           setDetail(result.data.notes);
         });
@@ -42,7 +40,7 @@ const Home = () => {
   const handleDelete = (e) => {
     let id = parseInt(e.target.value);
 
-    axios.delete(`http://localhost:9000/api/v1/cms/notes/${id}`).then(() => {
+    axios.delete(`${process.env.REACT_APP_NOTES}/${id}`).then(() => {
       setFetchStatus(!fetchStatus);
       notify();
     });
