@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
-import { ToastContainer, toast } from "react-toastify";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import Cookies from "js-cookie";
 import axios from "axios";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -12,7 +13,8 @@ export const Form = () => {
     notes: "",
   });
 
-  const notify = () => toast.success(`${input.title} successfully created`);
+  const notifySuccess = () => toast.success(`Tambah Berhasil`);
+  const notifyError = () => toast.success(`Tambah Gagal`);
 
   const handleInput = (e) => {
     let name = e.target.name;
@@ -31,23 +33,32 @@ export const Form = () => {
     const { title, notes } = input;
 
     await axios
-      .post("http://localhost:9000/api/v1/cms/notes", {
-        userId: 8,
-        title,
-        notes,
+      .post(
+        process.env.REACT_APP_NOTES,
+        {
+          title,
+          notes,
+        },
+        {
+          headers: { Authorization: "Bearer " + Cookies.get("token") },
+        }
+      )
+      .then(() => {
+        notifySuccess();
+        setTimeout(() => {
+          navigate("/");
+        }, 500);
       })
-      .then((res) => {
-        // setMessage(res.data.message)
-        navigate("/");
-      });
-
-    setInput({
-      title: "",
-      notes: "",
-    });
+      .catch(() => {
+        notifyError();
+      })
+      .finally(() =>
+        setInput({
+          title: "",
+          notes: "",
+        })
+      );
   };
-
-  useEffect(() => {}, []);
 
   return (
     <div className="w-full h-screen inline-flex justify-center items-center bg-teal-200 px-5 font-poppins">
@@ -79,7 +90,6 @@ export const Form = () => {
           <button
             type="submit"
             className="bg-teal-400 text-white rounded-full py-2 my-5"
-            onClick={notify}
           >
             ADD
           </button>
