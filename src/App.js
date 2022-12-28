@@ -5,9 +5,10 @@ import Profile from "./pages/Profile";
 import Home from "./pages/Home";
 import Add from "./pages/Add";
 import Login from "./pages/Login";
+import Register from "./pages/Register";
 
 const App = () => {
-  const AuthRoute = ({ children }) => {
+  const ProtectedRoute = ({ children }) => {
     if (Cookies.get("token") !== undefined) {
       return children;
     } else if (Cookies.get("token") === undefined) {
@@ -34,14 +35,15 @@ const App = () => {
           <Route
             path="/"
             element={
-              <AuthRoute>
+              <ProtectedRoute>
                 <Home />
-              </AuthRoute>
+              </ProtectedRoute>
             }
           />
           <Route path="/add" element={<Add />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
         </Routes>
       </BrowserRouter>
     </div>

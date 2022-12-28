@@ -1,5 +1,5 @@
-import Cookies from "js-cookie"
 import { Link, useNavigate } from "react-router-dom"
+import Cookies from "js-cookie"
 
 const Navbar = () => {
   const navigate = useNavigate()

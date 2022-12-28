@@ -1,4 +1,4 @@
-import Navbar from "../components/Navbar"
+import Navbar from "../components/Navbar";
 
 const Profile = () => {
   return (
@@ -6,7 +6,7 @@ const Profile = () => {
       <Navbar />
       <div className="pt-20 w-full px-5">Profile</div>
     </div>
-  )
-}
+  );
+};
 
-export default Profile
+export default Profile;
